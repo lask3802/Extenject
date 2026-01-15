@@ -23,6 +23,8 @@ jobs:
         projectPath:
           - UnityProject
         unityVersion:
+          # Unity 6 (6000.x) may have limited support in game-ci actions
+          # If tests fail due to Unity version issues, consider using 2022.3.x as fallback
           - 6000.0.64f1
         testMode:
           - editmode
@@ -35,6 +37,21 @@ jobs:
           lfs: true
           fetch-depth: 0
       
+      # Show environment info for debugging
+      - name: Environment Info
+        run: |
+          echo "## Environment Information" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "- Runner OS: ${{ runner.os }}" >> $GITHUB_STEP_SUMMARY
+          echo "- Unity Version: ${{ matrix.unityVersion }}" >> $GITHUB_STEP_SUMMARY
+          echo "- Test Mode: ${{ matrix.testMode }}" >> $GITHUB_STEP_SUMMARY
+          echo "- Project Path: ${{ matrix.projectPath }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### Disk Space Before Cleanup:" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          df -h >> $GITHUB_STEP_SUMMARY || true
+          echo '```' >> $GITHUB_STEP_SUMMARY
+      
       # Free up disk space
       - name: Free Disk Space
         run: |
@@ -42,6 +59,11 @@ jobs:
           sudo rm -rf /opt/ghc
           sudo rm -rf "/usr/local/share/boost"
           sudo rm -rf "$AGENT_TOOLSDIRECTORY"
+          
+          echo "### Disk Space After Cleanup:" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          df -h >> $GITHUB_STEP_SUMMARY || true
+          echo '```' >> $GITHUB_STEP_SUMMARY
       
       # Cache Unity Library to speed up builds
       - name: Cache Unity Library
@@ -78,20 +100,45 @@ jobs:
         if: always()
         with:
           name: Performance-Test-Results-${{ matrix.unityVersion }}
-          path: ${{ steps.performanceTests.outputs.artifactsPath }}
+          path: |
+            ${{ steps.performanceTests.outputs.artifactsPath }}
+            artifacts/
+          if-no-files-found: warn
       
       # Display test logs on failure
       - name: Display Test Logs
-        if: failure()
+        if: always()
         run: |
-          echo "## Test Execution Failed" >> $GITHUB_STEP_SUMMARY
+          echo "## Test Execution Debug Info" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          echo "Check the uploaded artifacts for detailed logs." >> $GITHUB_STEP_SUMMARY
+          echo "Test step outcome: ${{ steps.performanceTests.outcome }}" >> $GITHUB_STEP_SUMMARY
+          echo "Artifacts path: ${{ steps.performanceTests.outputs.artifactsPath }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
           
           # Try to display any available logs
           if [ -d "${{ steps.performanceTests.outputs.artifactsPath }}" ]; then
-            echo "Artifacts directory exists. Contents:" >> $GITHUB_STEP_SUMMARY
-            ls -la "${{ steps.performanceTests.outputs.artifactsPath }}" >> $GITHUB_STEP_SUMMARY || true
+            echo "### Artifacts directory exists. Contents:" >> $GITHUB_STEP_SUMMARY
+            echo '```' >> $GITHUB_STEP_SUMMARY
+            ls -laR "${{ steps.performanceTests.outputs.artifactsPath }}" >> $GITHUB_STEP_SUMMARY || true
+            echo '```' >> $GITHUB_STEP_SUMMARY
+          else
+            echo "### Artifacts directory not found at expected path" >> $GITHUB_STEP_SUMMARY
+            
+            # Check alternative locations
+            if [ -d "artifacts" ]; then
+              echo "Found artifacts in root directory:" >> $GITHUB_STEP_SUMMARY
+              echo '```' >> $GITHUB_STEP_SUMMARY
+              ls -laR artifacts/ >> $GITHUB_STEP_SUMMARY || true
+              echo '```' >> $GITHUB_STEP_SUMMARY
+            fi
+          fi
+          
+          # Show Unity logs if available
+          if [ -f "${{ matrix.projectPath }}/Logs/Unity.log" ]; then
+            echo "### Unity Log (last 100 lines):" >> $GITHUB_STEP_SUMMARY
+            echo '```' >> $GITHUB_STEP_SUMMARY
+            tail -n 100 "${{ matrix.projectPath }}/Logs/Unity.log" >> $GITHUB_STEP_SUMMARY || true
+            echo '```' >> $GITHUB_STEP_SUMMARY
           fi
       
       # Parse and display performance metrics
@@ -280,7 +327,46 @@ jobs:
         if: always()
         with:
           name: Integration-Performance-Results-${{ matrix.unityVersion }}
-          path: ${{ steps.integrationTests.outputs.artifactsPath }}
+          path: |
+            ${{ steps.integrationTests.outputs.artifactsPath }}
+            artifacts/
+          if-no-files-found: warn
+      
+      # Display test logs
+      - name: Display Integration Test Logs
+        if: always()
+        run: |
+          echo "## Integration Test Debug Info" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "Test step outcome: ${{ steps.integrationTests.outcome }}" >> $GITHUB_STEP_SUMMARY
+          echo "Artifacts path: ${{ steps.integrationTests.outputs.artifactsPath }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          
+          # Try to display any available logs
+          if [ -d "${{ steps.integrationTests.outputs.artifactsPath }}" ]; then
+            echo "### Artifacts directory exists. Contents:" >> $GITHUB_STEP_SUMMARY
+            echo '```' >> $GITHUB_STEP_SUMMARY
+            ls -laR "${{ steps.integrationTests.outputs.artifactsPath }}" >> $GITHUB_STEP_SUMMARY || true
+            echo '```' >> $GITHUB_STEP_SUMMARY
+          else
+            echo "### Artifacts directory not found at expected path" >> $GITHUB_STEP_SUMMARY
+            
+            # Check alternative locations
+            if [ -d "artifacts" ]; then
+              echo "Found artifacts in root directory:" >> $GITHUB_STEP_SUMMARY
+              echo '```' >> $GITHUB_STEP_SUMMARY
+              ls -laR artifacts/ >> $GITHUB_STEP_SUMMARY || true
+              echo '```' >> $GITHUB_STEP_SUMMARY
+            fi
+          fi
+          
+          # Show Unity logs if available
+          if [ -f "${{ matrix.projectPath }}/Logs/Unity.log" ]; then
+            echo "### Unity Log (last 100 lines):" >> $GITHUB_STEP_SUMMARY
+            echo '```' >> $GITHUB_STEP_SUMMARY
+            tail -n 100 "${{ matrix.projectPath }}/Logs/Unity.log" >> $GITHUB_STEP_SUMMARY || true
+            echo '```' >> $GITHUB_STEP_SUMMARY
+          fi
       
       - name: Check Integration Test Results
         if: steps.integrationTests.outcome == 'failure'
