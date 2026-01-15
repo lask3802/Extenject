@@ -54,16 +54,6 @@ jobs:
             Library-PerformanceTest-${{ matrix.projectPath }}-
             Library-
       
-      # Activate Unity License
-      - name: Activate Unity License
-        uses: game-ci/unity-activate@v3
-        env:
-          UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
-          UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
-          UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
-        with:
-          unityVersion: ${{ matrix.unityVersion }}
-      
       # Run Performance Tests
       - name: Run Performance Tests
         uses: game-ci/unity-test-runner@v4
@@ -78,9 +68,9 @@ jobs:
           unityVersion: ${{ matrix.unityVersion }}
           githubToken: ${{ secrets.GITHUB_TOKEN }}
           checkName: Performance Test Results
-          # Run only performance-related tests
-          customParameters: -testCategory "Performance"
-        continue-on-error: false
+          # Run only performance-related tests - removed -testCategory due to Unity 6 compatibility
+          customParameters: ""
+        continue-on-error: true
       
       # Upload test results
       - name: Upload Test Results
@@ -90,6 +80,20 @@ jobs:
           name: Performance-Test-Results-${{ matrix.unityVersion }}
           path: ${{ steps.performanceTests.outputs.artifactsPath }}
       
+      # Display test logs on failure
+      - name: Display Test Logs
+        if: failure()
+        run: |
+          echo "## Test Execution Failed" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "Check the uploaded artifacts for detailed logs." >> $GITHUB_STEP_SUMMARY
+          
+          # Try to display any available logs
+          if [ -d "${{ steps.performanceTests.outputs.artifactsPath }}" ]; then
+            echo "Artifacts directory exists. Contents:" >> $GITHUB_STEP_SUMMARY
+            ls -la "${{ steps.performanceTests.outputs.artifactsPath }}" >> $GITHUB_STEP_SUMMARY || true
+          fi
+      
       # Parse and display performance metrics
       - name: Extract Performance Metrics
         if: always()
@@ -97,11 +101,18 @@ jobs:
           echo "## Performance Test Results" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           
+          # Check test step outcome
+          if [ "${{ steps.performanceTests.outcome }}" == "success" ]; then
+            echo "### Test Execution Status: ✅ PASSED" >> $GITHUB_STEP_SUMMARY
+          elif [ "${{ steps.performanceTests.outcome }}" == "failure" ]; then
+            echo "### Test Execution Status: ❌ FAILED" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "### Test Execution Status: ⚠️ ${{ steps.performanceTests.outcome }}" >> $GITHUB_STEP_SUMMARY
+          fi
+          echo "" >> $GITHUB_STEP_SUMMARY
+          
           # Check if test results exist
           if [ -d "${{ steps.performanceTests.outputs.artifactsPath }}" ]; then
-            echo "### Test Execution Status: ✅ PASSED" >> $GITHUB_STEP_SUMMARY
-            echo "" >> $GITHUB_STEP_SUMMARY
-            
             # Try to extract performance metrics from test results
             TEST_RESULTS="${{ steps.performanceTests.outputs.artifactsPath }}"
             
@@ -142,9 +153,10 @@ jobs:
             echo "" >> $GITHUB_STEP_SUMMARY
             
           else
-            echo "### Test Execution Status: ❌ FAILED" >> $GITHUB_STEP_SUMMARY
+            echo "### Test Execution Details" >> $GITHUB_STEP_SUMMARY
             echo "" >> $GITHUB_STEP_SUMMARY
-            echo "Test results not found. Check the test runner logs for details." >> $GITHUB_STEP_SUMMARY
+            echo "Test results not found in expected location. This may indicate an issue with test execution." >> $GITHUB_STEP_SUMMARY
+            echo "Please check the test runner logs and uploaded artifacts for details." >> $GITHUB_STEP_SUMMARY
           fi
       
       # Comment on PR with results (only for pull requests)
@@ -206,12 +218,8 @@ jobs:
         if: steps.performanceTests.outcome == 'failure'
         run: |
           echo "::error::Performance tests failed!"
+          echo "Please check the test logs and artifacts for details."
           exit 1
-      
-      # Return Unity License
-      - name: Return Unity License
-        uses: game-ci/unity-return-license@v3
-        if: always()
 
   # Run integration tests in PlayMode
   performance-integration-tests:
@@ -251,16 +259,6 @@ jobs:
             Library-IntegrationPerf-${{ matrix.projectPath }}-
             Library-
       
-      # Activate Unity License
-      - name: Activate Unity License
-        uses: game-ci/unity-activate@v3
-        env:
-          UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
-          UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
-          UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
-        with:
-          unityVersion: ${{ matrix.unityVersion }}
-      
       - name: Run Integration Performance Tests
         uses: game-ci/unity-test-runner@v4
         id: integrationTests
@@ -274,7 +272,8 @@ jobs:
           unityVersion: ${{ matrix.unityVersion }}
           githubToken: ${{ secrets.GITHUB_TOKEN }}
           checkName: Integration Performance Test Results
-        continue-on-error: false
+          customParameters: ""
+        continue-on-error: true
       
       - name: Upload Integration Test Results
         uses: actions/upload-artifact@v4
@@ -287,9 +286,5 @@ jobs:
         if: steps.integrationTests.outcome == 'failure'
         run: |
           echo "::error::Integration performance tests failed!"
+          echo "Please check the test logs and artifacts for details."
           exit 1
-      
-      # Return Unity License
-      - name: Return Unity License
-        uses: game-ci/unity-return-license@v3
-        if: always()
