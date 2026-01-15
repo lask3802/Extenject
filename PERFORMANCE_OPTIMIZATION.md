@@ -197,6 +197,33 @@ Located in `UnityProject/Assets/Plugins/Zenject/Tests/IntegrationTests/Tests/Per
    - Click "Run All" or select:
      - `Tests/IntegrationTests/Tests/Performance/`
 
+### Using GitHub Actions (Automated CI/CD)
+
+A dedicated **Performance Testing** workflow has been created at `.github/workflows/performance-test.yml`.
+
+**Triggers**:
+- Automatically runs on pull requests that modify source or test files
+- Runs on pushes to `performance-optimize` branches
+- Can be manually triggered via workflow_dispatch
+
+**What it does**:
+1. Runs all performance-related tests (EditMode and PlayMode)
+2. Extracts and reports performance metrics
+3. Comments on PRs with test results and expected improvements
+4. Uploads detailed test artifacts for analysis
+
+**How to view results**:
+- Go to the "Actions" tab in the GitHub repository
+- Select the "Performance Testing" workflow
+- View the latest run for test results and performance metrics
+
+**Example workflow output**:
+The workflow automatically generates a summary with:
+- Test execution status (passed/failed counts)
+- Performance test categories executed
+- Expected performance improvements table
+- Links to detailed test artifacts
+
 ### Performance Baseline Results
 
 Run the baseline tests and check Unity Console for output like:

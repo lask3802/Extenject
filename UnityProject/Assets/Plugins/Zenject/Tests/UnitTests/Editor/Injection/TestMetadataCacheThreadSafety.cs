@@ -8,6 +8,7 @@ using Assert = ModestTree.Assert;
 namespace Zenject.Tests.Injection
 {
     [TestFixture]
+    [Category("Performance")]
     public class TestMetadataCacheThreadSafety : ZenjectUnitTestFixture
     {
         class TestClass1

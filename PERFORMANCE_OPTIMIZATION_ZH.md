@@ -128,6 +128,33 @@ for (int i = 0; i < propertyCount; i++)
    - 執行測試資料夾:
      - `Tests/IntegrationTests/Tests/Performance/`
 
+### 使用 GitHub Actions（自動化 CI/CD）
+
+已建立專用的**效能測試**工作流程，位於 `.github/workflows/performance-test.yml`。
+
+**觸發條件**:
+- 修改原始碼或測試檔案的 Pull Request 會自動執行
+- 推送到 `performance-optimize` 分支時執行
+- 可透過 workflow_dispatch 手動觸發
+
+**功能**:
+1. 執行所有效能相關測試（EditMode 和 PlayMode）
+2. 擷取並報告效能指標
+3. 在 PR 中自動留言顯示測試結果和預期改善
+4. 上傳詳細的測試成果供分析
+
+**如何查看結果**:
+- 前往 GitHub repository 的 "Actions" 標籤
+- 選擇 "Performance Testing" 工作流程
+- 查看最新執行結果的測試數據和效能指標
+
+**工作流程輸出範例**:
+工作流程會自動產生摘要，包含:
+- 測試執行狀態（通過/失敗數量）
+- 執行的效能測試類別
+- 預期效能改善表格
+- 詳細測試成果的連結
+
 ### 預期輸出
 
 測試應顯示如下效能基準:
@@ -153,6 +180,9 @@ for (int i = 0; i < propertyCount; i++)
 - `Tests/UnitTests/Editor/Injection/TestInjectMetadataCache.cs`
 - `Tests/UnitTests/Editor/Injection/TestMetadataCacheThreadSafety.cs`
 - `Tests/IntegrationTests/Tests/Performance/TestPerformanceIntegration.cs`
+
+### GitHub Actions 工作流程
+- `.github/workflows/performance-test.yml` (自動化效能測試)
 
 ### 文件
 - `PERFORMANCE_OPTIMIZATION.md` (英文完整說明)

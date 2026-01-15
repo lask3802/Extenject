@@ -6,6 +6,7 @@ using Assert = ModestTree.Assert;
 namespace Zenject.Tests.Performance
 {
     [TestFixture]
+    [Category("Performance")]
     public class TestLinqElimination : ZenjectUnitTestFixture
     {
         class SimpleClass

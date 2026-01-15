@@ -5,6 +5,7 @@ using Zenject.Tests.Performance;
 
 namespace Zenject.Tests.Performance
 {
+    [Category("Performance")]
     public class TestPerformanceIntegration : ZenjectIntegrationTestFixture
     {
         class SimpleService
