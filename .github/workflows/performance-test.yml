@@ -35,6 +35,14 @@ jobs:
           lfs: true
           fetch-depth: 0
       
+      # Free up disk space
+      - name: Free Disk Space
+        run: |
+          sudo rm -rf /usr/share/dotnet
+          sudo rm -rf /opt/ghc
+          sudo rm -rf "/usr/local/share/boost"
+          sudo rm -rf "$AGENT_TOOLSDIRECTORY"
+      
       # Cache Unity Library to speed up builds
       - name: Cache Unity Library
         uses: actions/cache@v4
@@ -45,6 +53,16 @@ jobs:
             Library-PerformanceTest-${{ matrix.projectPath }}-${{ matrix.unityVersion }}-
             Library-PerformanceTest-${{ matrix.projectPath }}-
             Library-
+      
+      # Activate Unity License
+      - name: Activate Unity License
+        uses: game-ci/unity-activate@v3
+        env:
+          UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
+          UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
+          UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
+        with:
+          unityVersion: ${{ matrix.unityVersion }}
       
       # Run Performance Tests
       - name: Run Performance Tests
@@ -189,6 +207,11 @@ jobs:
         run: |
           echo "::error::Performance tests failed!"
           exit 1
+      
+      # Return Unity License
+      - name: Return Unity License
+        uses: game-ci/unity-return-license@v3
+        if: always()
 
   # Run integration tests in PlayMode
   performance-integration-tests:
@@ -211,6 +234,14 @@ jobs:
         with:
           lfs: true
       
+      # Free up disk space
+      - name: Free Disk Space
+        run: |
+          sudo rm -rf /usr/share/dotnet
+          sudo rm -rf /opt/ghc
+          sudo rm -rf "/usr/local/share/boost"
+          sudo rm -rf "$AGENT_TOOLSDIRECTORY"
+      
       - name: Cache Unity Library
         uses: actions/cache@v4
         with:
@@ -219,6 +250,16 @@ jobs:
           restore-keys: |
             Library-IntegrationPerf-${{ matrix.projectPath }}-
             Library-
+      
+      # Activate Unity License
+      - name: Activate Unity License
+        uses: game-ci/unity-activate@v3
+        env:
+          UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
+          UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
+          UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
+        with:
+          unityVersion: ${{ matrix.unityVersion }}
       
       - name: Run Integration Performance Tests
         uses: game-ci/unity-test-runner@v4
@@ -247,3 +288,8 @@ jobs:
         run: |
           echo "::error::Integration performance tests failed!"
           exit 1
+      
+      # Return Unity License
+      - name: Return Unity License
+        uses: game-ci/unity-return-license@v3
+        if: always()
