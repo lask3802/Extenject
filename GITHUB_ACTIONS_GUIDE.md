@@ -47,7 +47,7 @@ Runs unit tests including:
 - 執行緒安全測試 (Thread safety tests)
 
 **測試模式 / Test Mode**: EditMode  
-**Unity 版本 / Unity Version**: 2019.4.1f1
+**Unity 版本 / Unity Version**: 6000.0.64f1
 
 #### Job 2: performance-integration-tests (PlayMode)
 
@@ -59,7 +59,7 @@ Runs integration tests including:
 - 跨元件整合測試 (Cross-component integration tests)
 
 **測試模式 / Test Mode**: PlayMode  
-**Unity 版本 / Unity Version**: 2019.4.1f1
+**Unity 版本 / Unity Version**: 6000.0.64f1
 
 ### 3. 自動化報告 / Automated Reporting
 

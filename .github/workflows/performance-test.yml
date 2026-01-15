@@ -23,21 +23,21 @@ jobs:
         projectPath:
           - UnityProject
         unityVersion:
-          - 2019.4.1f1
+          - 6000.0.64f1
         testMode:
           - editmode
     
     steps:
       # Checkout repository
       - name: Checkout repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
         with:
           lfs: true
           fetch-depth: 0
       
       # Cache Unity Library to speed up builds
       - name: Cache Unity Library
-        uses: actions/cache@v2
+        uses: actions/cache@v4
         with:
           path: ${{ matrix.projectPath }}/Library
           key: Library-PerformanceTest-${{ matrix.projectPath }}-${{ matrix.unityVersion }}-${{ hashFiles('UnityProject/Assets/**', 'UnityProject/Packages/**', 'UnityProject/ProjectSettings/**') }}
@@ -48,10 +48,12 @@ jobs:
       
       # Run Performance Tests
       - name: Run Performance Tests
-        uses: game-ci/unity-test-runner@v2
+        uses: game-ci/unity-test-runner@v4
         id: performanceTests
         env:
           UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
+          UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
+          UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
         with:
           testMode: ${{ matrix.testMode }}
           projectPath: ${{ matrix.projectPath }}
@@ -64,7 +66,7 @@ jobs:
       
       # Upload test results
       - name: Upload Test Results
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         if: always()
         with:
           name: Performance-Test-Results-${{ matrix.unityVersion }}
@@ -130,7 +132,7 @@ jobs:
       # Comment on PR with results (only for pull requests)
       - name: Comment PR with Performance Results
         if: github.event_name == 'pull_request' && always()
-        uses: actions/github-script@v5
+        uses: actions/github-script@v7
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
@@ -199,18 +201,18 @@ jobs:
         projectPath:
           - UnityProject
         unityVersion:
-          - 2019.4.1f1
+          - 6000.0.64f1
         testMode:
           - playmode
     
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
         with:
           lfs: true
       
       - name: Cache Unity Library
-        uses: actions/cache@v2
+        uses: actions/cache@v4
         with:
           path: ${{ matrix.projectPath }}/Library
           key: Library-IntegrationPerf-${{ matrix.projectPath }}-${{ matrix.unityVersion }}
@@ -219,10 +221,12 @@ jobs:
             Library-
       
       - name: Run Integration Performance Tests
-        uses: game-ci/unity-test-runner@v2
+        uses: game-ci/unity-test-runner@v4
         id: integrationTests
         env:
           UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
+          UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
+          UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
         with:
           testMode: ${{ matrix.testMode }}
           projectPath: ${{ matrix.projectPath }}
@@ -232,7 +236,7 @@ jobs:
         continue-on-error: false
       
       - name: Upload Integration Test Results
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         if: always()
         with:
           name: Integration-Performance-Results-${{ matrix.unityVersion }}
