@@ -24,7 +24,7 @@ jobs:
         assetsPath:
           - UnityProject
         unityVersion:
-          - 2019.4.1f1
+          - 6000.0.64f1
         targetPlatform:
           - Android # Build a Android standalone.
           - iOS # Build an iOS player.
