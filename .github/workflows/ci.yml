@@ -26,12 +26,9 @@ jobs:
         unityVersion:
           - 6000.0.64f1
         targetPlatform:
-          - Android # Build a Android standalone.
-          - iOS # Build an iOS player.
-          - StandaloneLinux64 # Build a Linux 64-bit standalone.
-          - StandaloneOSX # Build a macOS standalone (Intel 64-bit).
-          - StandaloneWindows64 # Build a Windows 64-bit standalone.
-          - WebGL # WebGL.
+          - Android # Build a Android standalone (il2cpp).
+          - iOS # Build an iOS player (il2cpp).
+          - StandaloneOSX # Build a macOS standalone.
           # Not supported platforms by GitHub actions:
           # - Windows Store # Build a standalone for Windows Store devices.
           # - PS4 # Build a Playstation 4 standalone.
