@@ -15,7 +15,7 @@ env:
 jobs:
   buildAndTestForSupportedPlatforms:
     name: Build for ${{ matrix.targetPlatform }} on version ${{ matrix.unityVersion }}
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     strategy:
       fail-fast: false
       matrix:
@@ -74,7 +74,7 @@ jobs:
           path: build
     
   Zenject-usage:
-    runs-on: [windows-latest]
+    runs-on: self-hosted
     name: Zenject-usage
     steps:
       - name: Checkout repository
@@ -95,7 +95,7 @@ jobs:
         
   buildUnity:
     name: Unity test
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     needs: Zenject-usage
     env:
       UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}

@@ -14,7 +14,7 @@ jobs:
 
     name: Build for ${{ matrix.targetPlatform }} on version ${{ matrix.unityVersion }}
 
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
 
     strategy:
       fail-fast: false
@@ -116,7 +116,7 @@ jobs:
           
   build-Zenject-Usage:
   
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     
     name: Build Zenject-Usage
     
@@ -145,7 +145,7 @@ jobs:
   
     name: Deploy Build Zenject-Usage
 
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     needs: build-Zenject-Usage
         
     steps:

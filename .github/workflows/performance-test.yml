@@ -15,7 +15,7 @@ on:
 jobs:
   performance-tests:
     name: Performance Tests on Unity ${{ matrix.unityVersion }}
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     
     strategy:
       fail-fast: false
@@ -271,7 +271,7 @@ jobs:
   # Run integration tests in PlayMode
   performance-integration-tests:
     name: Integration Performance Tests
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     
     strategy:
       fail-fast: false
