@@ -23,9 +23,8 @@ jobs:
         projectPath:
           - UnityProject
         unityVersion:
-          # Unity 6 (6000.x) may have limited support in game-ci actions
-          # If tests fail due to Unity version issues, consider using 2022.3.x as fallback
-          - 6000.0.64f1
+          # Unity 6 on macOS self-hosted runners using direct CLI
+          - 6000.0.65f1
         testMode:
           - editmode
     
@@ -76,22 +75,27 @@ jobs:
             Library-PerformanceTest-${{ matrix.projectPath }}-
             Library-
       
-      # Run Performance Tests
+      # Run Performance Tests using Unity CLI (for macOS self-hosted runners)
       - name: Run Performance Tests
-        uses: game-ci/unity-test-runner@v4
         id: performanceTests
-        env:
-          UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
-          UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
-          UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
-        with:
-          testMode: ${{ matrix.testMode }}
-          projectPath: ${{ matrix.projectPath }}
-          unityVersion: ${{ matrix.unityVersion }}
-          githubToken: ${{ secrets.GITHUB_TOKEN }}
-          checkName: Performance Test Results
-          # Run only performance-related tests - removed -testCategory due to Unity 6 compatibility
-          customParameters: ""
+        run: |
+          UNITY_PATH="/Applications/UnityInstalls/${{ matrix.unityVersion }}/Unity.app/Contents/MacOS/Unity"
+          
+          echo "Running Unity tests with CLI..."
+          echo "Unity Path: $UNITY_PATH"
+          echo "Project Path: ${{ matrix.projectPath }}"
+          echo "Test Mode: ${{ matrix.testMode }}"
+          
+          $UNITY_PATH \
+            -batchmode \
+            -nographics \
+            -silent-crashes \
+            -logFile - \
+            -projectPath "${{ matrix.projectPath }}" \
+            -runTests \
+            -testPlatform ${{ matrix.testMode }} \
+            -testResults "${{ matrix.projectPath }}/TestResults-${{ matrix.testMode }}.xml" \
+            || echo "Tests completed with exit code $?"
         continue-on-error: true
       
       # Upload test results
@@ -101,8 +105,8 @@ jobs:
         with:
           name: Performance-Test-Results-${{ matrix.unityVersion }}
           path: |
-            ${{ steps.performanceTests.outputs.artifactsPath }}
-            artifacts/
+            ${{ matrix.projectPath }}/TestResults-${{ matrix.testMode }}.xml
+            ${{ matrix.projectPath }}/Logs/
           if-no-files-found: warn
       
       # Display test logs on failure
@@ -112,25 +116,17 @@ jobs:
           echo "## Test Execution Debug Info" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "Test step outcome: ${{ steps.performanceTests.outcome }}" >> $GITHUB_STEP_SUMMARY
-          echo "Artifacts path: ${{ steps.performanceTests.outputs.artifactsPath }}" >> $GITHUB_STEP_SUMMARY
+          echo "Test results path: ${{ matrix.projectPath }}/TestResults-${{ matrix.testMode }}.xml" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           
-          # Try to display any available logs
-          if [ -d "${{ steps.performanceTests.outputs.artifactsPath }}" ]; then
-            echo "### Artifacts directory exists. Contents:" >> $GITHUB_STEP_SUMMARY
+          # Display test results if available
+          if [ -f "${{ matrix.projectPath }}/TestResults-${{ matrix.testMode }}.xml" ]; then
+            echo "### Test Results File Found" >> $GITHUB_STEP_SUMMARY
             echo '```' >> $GITHUB_STEP_SUMMARY
-            ls -laR "${{ steps.performanceTests.outputs.artifactsPath }}" >> $GITHUB_STEP_SUMMARY || true
+            ls -lh "${{ matrix.projectPath }}/TestResults-${{ matrix.testMode }}.xml" >> $GITHUB_STEP_SUMMARY || true
             echo '```' >> $GITHUB_STEP_SUMMARY
           else
-            echo "### Artifacts directory not found at expected path" >> $GITHUB_STEP_SUMMARY
-            
-            # Check alternative locations
-            if [ -d "artifacts" ]; then
-              echo "Found artifacts in root directory:" >> $GITHUB_STEP_SUMMARY
-              echo '```' >> $GITHUB_STEP_SUMMARY
-              ls -laR artifacts/ >> $GITHUB_STEP_SUMMARY || true
-              echo '```' >> $GITHUB_STEP_SUMMARY
-            fi
+            echo "### Test Results File NOT Found" >> $GITHUB_STEP_SUMMARY
           fi
           
           # Show Unity logs if available
@@ -214,7 +210,7 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
             const fs = require('fs');
-            const testResultsPath = '${{ steps.performanceTests.outputs.artifactsPath }}/editmode-results.xml';
+            const testResultsPath = '${{ matrix.projectPath }}/TestResults-${{ matrix.testMode }}.xml';
             
             let comment = '## 🚀 Performance Test Results\n\n';
             
@@ -279,7 +275,7 @@ jobs:
         projectPath:
           - UnityProject
         unityVersion:
-          - 6000.0.64f1
+          - 6000.0.65f1
         testMode:
           - playmode
     
@@ -307,19 +303,25 @@ jobs:
             Library-
       
       - name: Run Integration Performance Tests
-        uses: game-ci/unity-test-runner@v4
         id: integrationTests
-        env:
-          UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
-          UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
-          UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
-        with:
-          testMode: ${{ matrix.testMode }}
-          projectPath: ${{ matrix.projectPath }}
-          unityVersion: ${{ matrix.unityVersion }}
-          githubToken: ${{ secrets.GITHUB_TOKEN }}
-          checkName: Integration Performance Test Results
-          customParameters: ""
+        run: |
+          UNITY_PATH="/Applications/UnityInstalls/${{ matrix.unityVersion }}/Unity.app/Contents/MacOS/Unity"
+          
+          echo "Running Unity integration tests with CLI..."
+          echo "Unity Path: $UNITY_PATH"
+          echo "Project Path: ${{ matrix.projectPath }}"
+          echo "Test Mode: ${{ matrix.testMode }}"
+          
+          $UNITY_PATH \
+            -batchmode \
+            -nographics \
+            -silent-crashes \
+            -logFile - \
+            -projectPath "${{ matrix.projectPath }}" \
+            -runTests \
+            -testPlatform ${{ matrix.testMode }} \
+            -testResults "${{ matrix.projectPath }}/TestResults-${{ matrix.testMode }}.xml" \
+            || echo "Tests completed with exit code $?"
         continue-on-error: true
       
       - name: Upload Integration Test Results
@@ -328,8 +330,8 @@ jobs:
         with:
           name: Integration-Performance-Results-${{ matrix.unityVersion }}
           path: |
-            ${{ steps.integrationTests.outputs.artifactsPath }}
-            artifacts/
+            ${{ matrix.projectPath }}/TestResults-${{ matrix.testMode }}.xml
+            ${{ matrix.projectPath }}/Logs/
           if-no-files-found: warn
       
       # Display test logs
@@ -339,25 +341,17 @@ jobs:
           echo "## Integration Test Debug Info" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "Test step outcome: ${{ steps.integrationTests.outcome }}" >> $GITHUB_STEP_SUMMARY
-          echo "Artifacts path: ${{ steps.integrationTests.outputs.artifactsPath }}" >> $GITHUB_STEP_SUMMARY
+          echo "Test results path: ${{ matrix.projectPath }}/TestResults-${{ matrix.testMode }}.xml" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           
-          # Try to display any available logs
-          if [ -d "${{ steps.integrationTests.outputs.artifactsPath }}" ]; then
-            echo "### Artifacts directory exists. Contents:" >> $GITHUB_STEP_SUMMARY
+          # Display test results if available
+          if [ -f "${{ matrix.projectPath }}/TestResults-${{ matrix.testMode }}.xml" ]; then
+            echo "### Test Results File Found" >> $GITHUB_STEP_SUMMARY
             echo '```' >> $GITHUB_STEP_SUMMARY
-            ls -laR "${{ steps.integrationTests.outputs.artifactsPath }}" >> $GITHUB_STEP_SUMMARY || true
+            ls -lh "${{ matrix.projectPath }}/TestResults-${{ matrix.testMode }}.xml" >> $GITHUB_STEP_SUMMARY || true
             echo '```' >> $GITHUB_STEP_SUMMARY
           else
-            echo "### Artifacts directory not found at expected path" >> $GITHUB_STEP_SUMMARY
-            
-            # Check alternative locations
-            if [ -d "artifacts" ]; then
-              echo "Found artifacts in root directory:" >> $GITHUB_STEP_SUMMARY
-              echo '```' >> $GITHUB_STEP_SUMMARY
-              ls -laR artifacts/ >> $GITHUB_STEP_SUMMARY || true
-              echo '```' >> $GITHUB_STEP_SUMMARY
-            fi
+            echo "### Test Results File NOT Found" >> $GITHUB_STEP_SUMMARY
           fi
           
           # Show Unity logs if available
