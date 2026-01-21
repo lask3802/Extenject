@@ -126,14 +126,14 @@ jobs:
         if: runner.os == 'Windows'
         uses: actions/upload-artifact@v4
         with:
-          name: Zenject-usage
+          name: Zenject-usage-Windows
           path: AssemblyBuild\Zenject-usage\bin\Debug\
           
       - name: Upload dll (macOS)
         if: runner.os == 'macOS'
         uses: actions/upload-artifact@v4
         with:
-          name: Zenject-usage
+          name: Zenject-usage-macOS
           path: AssemblyBuild/Zenject-usage/bin/Debug/
         
   buildUnity:
@@ -153,10 +153,10 @@ jobs:
       - name: Download Zenject-usage
         uses: actions/download-artifact@v1
         with:
-          name: Zenject-usage
+          name: Zenject-usage-macOS
 
       - name: Install Zenject-usage
         run: |
-          ls -l Zenject-usage
-          cp Zenject-usage/Zenject-usage.dll UnityProject/Assets/Plugins/Zenject/Source/Usage
+          ls -l Zenject-usage-macOS
+          cp Zenject-usage-macOS/Zenject-usage.dll UnityProject/Assets/Plugins/Zenject/Source/Usage
           ls -l UnityProject/Assets/Plugins/Zenject/Source/Usage

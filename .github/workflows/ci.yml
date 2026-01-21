@@ -79,7 +79,7 @@ jobs:
         uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: Test results for ${{ matrix.testMode }}
+          name: Test results for ${{ matrix.targetPlatform }}-${{ matrix.testMode }}
           path: |
             ${{ matrix.projectPath }}/TestResults-${{ matrix.testMode }}.xml
             ${{ matrix.projectPath }}/Logs/
