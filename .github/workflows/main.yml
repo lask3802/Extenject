@@ -154,6 +154,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: Zenject-usage-macOS
+          path: Zenject-usage-macOS
 
       - name: Install Zenject-usage
         run: |
