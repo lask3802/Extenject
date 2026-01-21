@@ -108,18 +108,33 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
 
-      - name: setup-msbuild
+      - name: setup-msbuild (Windows only)
+        if: runner.os == 'Windows'
         uses: microsoft/setup-msbuild@v1
         
-      - name: MSBuild
+      - name: MSBuild (Windows)
+        if: runner.os == 'Windows'
         working-directory: AssemblyBuild\Zenject-usage
         run: msbuild Zenject-usage.sln
         
-      - name: Upload dll
+      - name: MSBuild (macOS)
+        if: runner.os == 'macOS'
+        working-directory: AssemblyBuild/Zenject-usage
+        run: msbuild Zenject-usage.sln
+        
+      - name: Upload dll (Windows)
+        if: runner.os == 'Windows'
         uses: actions/upload-artifact@v4
         with:
           name: Zenject-usage
           path: AssemblyBuild\Zenject-usage\bin\Debug\
+          
+      - name: Upload dll (macOS)
+        if: runner.os == 'macOS'
+        uses: actions/upload-artifact@v4
+        with:
+          name: Zenject-usage
+          path: AssemblyBuild/Zenject-usage/bin/Debug/
         
   buildUnity:
     name: Unity test
