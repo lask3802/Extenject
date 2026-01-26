@@ -95,13 +95,14 @@ jobs:
 
       # Upload Test Artifacts
       - name: Upload Test Results Artifacts
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         if: always()
         with:
           name: Test results for ${{ matrix.testMode }}
           path: |
             ${{ steps.testRunner.outputs.artifactsPath }}
             ${{ matrix.projectPath }}/TestResults-*.xml
+          if-no-files-found: ignore
 
       # Build
       - name: Build 

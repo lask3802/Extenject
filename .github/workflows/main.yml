@@ -56,13 +56,14 @@ jobs:
         with:
           projectPath: ${{ matrix.projectPath }}
           unityVersion: ${{ matrix.unityVersion }}
-      - uses: actions/upload-artifact@v1
+      - uses: actions/upload-artifact@v3
         if: always()
         with:
           name: Test results (all modes)
           path: |
             ${{ steps.testRunner.outputs.artifactsPath }}
             ${{ matrix.projectPath }}/TestResults-*.xml
+          if-no-files-found: ignore
           
       # Build
       - uses: webbertakken/unity-builder@v0.10
