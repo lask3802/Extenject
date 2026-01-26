@@ -253,13 +253,26 @@ namespace Zenject
             var injectConstructor = ReflectionInfoTypeInfoConverter.ConvertConstructor(
                 reflectionInfo.InjectConstructor, type);
 
-            var injectMethods = reflectionInfo.InjectMethods.Select(
-                ReflectionInfoTypeInfoConverter.ConvertMethod).ToArray();
+            // Avoid LINQ allocations - use for loops instead
+            var injectMethods = new InjectableInfo[reflectionInfo.InjectMethods.Count];
+            for (int i = 0; i < reflectionInfo.InjectMethods.Count; i++)
+            {
+                injectMethods[i] = ReflectionInfoTypeInfoConverter.ConvertMethod(reflectionInfo.InjectMethods[i]);
+            }
 
-            var memberInfos = reflectionInfo.InjectFields.Select(
-                x => ReflectionInfoTypeInfoConverter.ConvertField(type, x)).Concat(
-                    reflectionInfo.InjectProperties.Select(
-                        x => ReflectionInfoTypeInfoConverter.ConvertProperty(type, x))).ToArray();
+            var fieldCount = reflectionInfo.InjectFields.Count;
+            var propertyCount = reflectionInfo.InjectProperties.Count;
+            var memberInfos = new InjectableInfo[fieldCount + propertyCount];
+            
+            for (int i = 0; i < fieldCount; i++)
+            {
+                memberInfos[i] = ReflectionInfoTypeInfoConverter.ConvertField(type, reflectionInfo.InjectFields[i]);
+            }
+            
+            for (int i = 0; i < propertyCount; i++)
+            {
+                memberInfos[fieldCount + i] = ReflectionInfoTypeInfoConverter.ConvertProperty(type, reflectionInfo.InjectProperties[i]);
+            }
 
             return new InjectTypeInfo(
                 type, injectConstructor, injectMethods, memberInfos);

@@ -934,9 +934,16 @@ namespace Zenject
 
                 if (matches.Count > 0 )
                 {
-                    return matches.Select(
-                        x => x.Provider.GetInstanceType(context))
-                        .Where(x => x != null).ToList();
+                    var result = new List<Type>(matches.Count);
+                    for (int i = 0; i < matches.Count; i++)
+                    {
+                        var type = matches[i].Provider.GetInstanceType(context);
+                        if (type != null)
+                        {
+                            result.Add(type);
+                        }
+                    }
+                    return result;
                 }
 
                 return new List<Type>();
@@ -1067,7 +1074,7 @@ namespace Zenject
                              context.GetObjectGraphString());
                     }
 
-                    if (instances.Count() > 1)
+                    if (instances.Count > 1)
                     {
                         throw Assert.CreateException(
                             "Provider returned multiple instances when only one was expected!  While resolving '{0}'{1}. Object graph:\n{2}", context.BindingId,
@@ -1077,7 +1084,7 @@ namespace Zenject
                              context.GetObjectGraphString());
                     }
 
-                    return instances.First();
+                    return instances[0];
                 }
                 finally
                 {
