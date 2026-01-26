@@ -2,7 +2,7 @@
 
 :+1::tada: **First off, thank you for considering to contribute to Extenject.** :tada::+1:
 
-The following is a set of guidelines for contributing to Extenject and its packages, which are hosted in [Extenject](https://github.com/svermeulen/Extenject) on GitHub. These are mostly guidelines, not rules. Use your best judgment, and feel free to propose changes to this document in a pull request.
+The following is a set of guidelines for contributing to Extenject and its packages, which are hosted in [Extenject](https://github.com/lask3802/Extenject) on GitHub. These are mostly guidelines, not rules. Use your best judgment, and feel free to propose changes to this document in a pull request.
 
 ## Table of Contents
 
@@ -48,9 +48,11 @@ Try our builds and pull requests in your own projects and communicate how it goe
 
 Before creating bug reports, please check the existing bug reports as you might find out that you don't need to create one. When you are creating a bug report, please include as many details as possible.
 
+> **Note:** We now use GitHub Issue Forms with enhanced tracking capabilities. You can track the status of your bug reports through status labels. See the [Issue Tracking Guide](.github/ISSUE_TRACKING.md) for details on how to check the status of reported issues.
+
 ### How Do I Submit A (Good) Bug Report?
 
-[Create an issue](https://github.com/svermeulen/Extenject/issues/new?template=bug_report.md) on the project's repository and provide the following information.
+[Create an issue](https://github.com/lask3802/Extenject/issues/new/choose) on the project's repository and provide the following information.
 
 Explain the problem and include additional details to help maintainers reproduce the problem:
 
@@ -80,9 +82,11 @@ This section guides you through submitting an enhancement suggestion for this pr
 
 Before creating enhancement suggestions, please check the list of enhancements suggestions in the issue tracker as you might find out that you don't need to create one. When you are creating an enhancement suggestion, please include as many details as possible.
 
+> **Note:** Feature requests now include status tracking. See the [Issue Tracking Guide](.github/ISSUE_TRACKING.md) to learn how to monitor the status of your feature requests.
+
 ### How Do I Submit A (Good) Enhancement Suggestion?
 
-[Create an issue](https://github.com/svermeulen/Extenject/issues/new?template=feature_request.md) on the project's repository and provide the following information:
+[Create an issue](https://github.com/lask3802/Extenject/issues/new/choose) on the project's repository and provide the following information:
 
 * **Use a clear and descriptive title** for the issue to identify the suggestion.
 * **Provide a step-by-step description of the suggested enhancement** in as many details as possible.
@@ -98,7 +102,7 @@ Before creating enhancement suggestions, please check the list of enhancements s
 
 ### How Do I Submit A (Good) Pull Request?
 
-Please send a [GitHub Pull Request](https://github.com/svermeulen/Extenject/compare) with a clear list of what you've done (read more about [pull requests](https://help.github.com/en/github/collaborating-with-issues-and-pull-requests/about-pull-requests)). 
+Please send a [GitHub Pull Request](https://github.com/lask3802/Extenject/compare) with a clear list of what you've done (read more about [pull requests](https://help.github.com/en/github/collaborating-with-issues-and-pull-requests/about-pull-requests)). 
 When you send a pull request, we will love you forever if you include unit tests. 
 We can always use more test coverage. 
 

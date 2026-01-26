@@ -1,0 +1,35 @@
+name: Other / Question
+description: Ask a question or report something else
+title: "[Other]: "
+labels: ["question"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        > **Note:** Please don't file an issue to ask a question. You'll get faster results by using the resources below.
+        
+        :rocket: **Chat (recommended):**
+        * [Extenject community on Gitter](https://gitter.im/Extenject/community) (Official)
+        * [Infallible Code's Discord](https://discord.gg/T5y5TD) (has an #Extenject-Zenject channel)
+        
+        :snail: **Websites/forums:**
+        * [StackOverflow](https://stackoverflow.com/questions/tagged/zenject)
+        * [Unity Forums](https://forum.unity.com/threads/zenject-dependency-injection-framework-for-unity.201184/)
+        
+        If you still want to file an issue here, please continue below.
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      description: Please describe your question or concern
+      placeholder: What would you like to know or discuss?
+    validations:
+      required: true
+
+  - type: textarea
+    id: additional-context
+    attributes:
+      label: Additional Context
+      description: Add any other context that might be helpful
+      placeholder: Any additional information...

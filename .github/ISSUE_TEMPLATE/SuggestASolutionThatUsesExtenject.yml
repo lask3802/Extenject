@@ -1,0 +1,139 @@
+name: Suggest a Solution Using Extenject
+description: Suggest a solution to be added into the Solutions that use Zenject/Extenject document
+title: "[Solution]: "
+labels: ["documentation", "showcase"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        If you want to suggest a solution to be added into the **Solutions that use Zenject/Extenject** document, you are more than welcome to do it here.
+        
+        Please provide some background and links to the game/solution.
+
+  - type: input
+    id: company
+    attributes:
+      label: Company/Developer Name
+      description: Name of the company or developer
+      placeholder: e.g., Awesome Games Inc.
+    validations:
+      required: true
+
+  - type: input
+    id: solution-name
+    attributes:
+      label: Solution/Game Name
+      description: Name of the solution or game
+      placeholder: e.g., My Amazing Game
+    validations:
+      required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      description: Descriptive content about the solution/game
+      placeholder: Tell us about your game or solution...
+    validations:
+      required: true
+
+  - type: input
+    id: platforms
+    attributes:
+      label: Platform(s)
+      description: What platforms is this available on?
+      placeholder: e.g., iOS, Android and PlayStation
+    validations:
+      required: true
+
+  - type: input
+    id: genres
+    attributes:
+      label: Genre(s)
+      description: What genre(s) does this belong to?
+      placeholder: e.g., E-Learning, RPG, Puzzle
+
+  - type: input
+    id: website
+    attributes:
+      label: Website
+      description: Link to the solution/game's website
+      placeholder: https://example.com
+
+  - type: input
+    id: app-store
+    attributes:
+      label: App Store Link
+      description: Link to App Store listing (if applicable)
+      placeholder: https://apps.apple.com/...
+
+  - type: input
+    id: play-store
+    attributes:
+      label: Play Store Link
+      description: Link to Play Store listing (if applicable)
+      placeholder: https://play.google.com/...
+
+  - type: input
+    id: header-image
+    attributes:
+      label: Header Image URL
+      description: URL to header image (400x225 recommended)
+      placeholder: https://example.com/header.png
+
+  - type: input
+    id: logo-image
+    attributes:
+      label: Logo Image URL
+      description: URL to logo image (100x100 recommended)
+      placeholder: https://example.com/logo.png
+
+  - type: textarea
+    id: screenshots
+    attributes:
+      label: Screenshot URLs
+      description: URLs to screenshots (300x180 recommended, one per line)
+      placeholder: |
+        https://example.com/screenshot1.png
+        https://example.com/screenshot2.png
+        https://example.com/screenshot3.png
+
+  - type: textarea
+    id: markdown-preview
+    attributes:
+      label: Markdown Preview (Optional)
+      description: If you want, you can prepare the markdown here
+      placeholder: |
+        ---
+        
+        ### `{Company}:` Solution name
+        
+        <br/><br/>
+        
+        <p align="center">
+          <img width="400" height="225" src="{Header Image}">
+        </p>
+        
+        <br/><br/>
+        
+        <img align="left" width="100" height="100" src="">
+        {Descriptive content}
+        
+        <br/><br/>
+        
+        * **Platform(s):** {E.g. iOS, Android and PlayStation}
+        * **Genre(s):** {E.g. E-Learning}
+        * **Developer:** {Name of developer/company}
+        
+        <br/><br/>
+        
+        <p align="center">
+          <img width="300" height="180" src="{Screenshot 1}">
+          <img width="300" height="180" src="{Screenshot 2}">
+          <img width="300" height="180" src="{Screenshot 3}">
+        </p>
+        
+        <p align="center">
+          <a href="{Link to the game's website}">Website</a> • 
+          <a href="{Link to the game's App Store}">App Store</a>
+        </p>
