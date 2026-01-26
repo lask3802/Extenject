@@ -48,6 +48,8 @@ Try our builds and pull requests in your own projects and communicate how it goe
 
 Before creating bug reports, please check the existing bug reports as you might find out that you don't need to create one. When you are creating a bug report, please include as many details as possible.
 
+> **Note:** We now use GitHub Issue Forms with enhanced tracking capabilities. You can track the status of your bug reports through status labels. See the [Issue Tracking Guide](.github/ISSUE_TRACKING.md) for details on how to check the status of reported issues.
+
 ### How Do I Submit A (Good) Bug Report?
 
 [Create an issue](https://github.com/svermeulen/Extenject/issues/new?template=bug_report.md) on the project's repository and provide the following information.
@@ -79,6 +81,8 @@ Include details about your configuration and environment:
 This section guides you through submitting an enhancement suggestion for this project, including completely new features and minor improvements to existing functionality. Following these guidelines helps maintainers and the community understand your suggestion and find related suggestions.
 
 Before creating enhancement suggestions, please check the list of enhancements suggestions in the issue tracker as you might find out that you don't need to create one. When you are creating an enhancement suggestion, please include as many details as possible.
+
+> **Note:** Feature requests now include status tracking. See the [Issue Tracking Guide](.github/ISSUE_TRACKING.md) to learn how to monitor the status of your feature requests.
 
 ### How Do I Submit A (Good) Enhancement Suggestion?
 

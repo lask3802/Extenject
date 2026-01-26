@@ -131,6 +131,8 @@ For general troubleshooting / support, please post to [stack overflow](https://s
 
 Or, if you have found a bug, you are also welcome to create an issue on the [github page](https://github.com/Mathijs-Bakker/Extenject), or a pull request if you have a fix / extension.  There is also a [gitter chat](https://gitter.im/Extenject/community) that you can join for real time discussion.
 
+> **Note:** We now have an enhanced issue tracking system that allows you to track the status of your bug reports and feature requests. See the [Issue Tracking Guide](.github/ISSUE_TRACKING.md) for details on how to check the status of reported issues.
+
 ## Features
 
 * Injection
