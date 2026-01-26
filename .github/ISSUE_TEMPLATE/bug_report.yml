@@ -1,0 +1,124 @@
+name: Bug Report
+description: Create a report to help Extenject improve
+title: "[Bug]: "
+labels: ["bug", "status: needs-triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for taking the time to report a bug! Please fill out the form below.
+        
+  - type: dropdown
+    id: status
+    attributes:
+      label: Status
+      description: Current status of this bug report (will be updated by maintainers)
+      options:
+        - Needs Triage
+        - Under Investigation
+        - Confirmed
+        - In Progress
+        - Fixed
+        - Won't Fix
+        - Duplicate
+      default: 0
+    validations:
+      required: false
+
+  - type: dropdown
+    id: priority
+    attributes:
+      label: Priority
+      description: How critical is this bug?
+      options:
+        - Low - Minor issue, has workaround
+        - Medium - Moderate impact
+        - High - Major functionality affected
+        - Critical - Blocking/crashes
+      default: 1
+    validations:
+      required: false
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Describe the bug
+      description: A clear and concise description of what the bug is.
+      placeholder: What happened?
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Steps to Reproduce
+      description: Steps to reproduce the behavior
+      placeholder: |
+        1. Go to '...'
+        2. Click on '....'
+        3. Scroll down to '....'
+        4. See error
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected Behavior
+      description: A clear and concise description of what you expected to happen.
+      placeholder: What should have happened?
+    validations:
+      required: true
+
+  - type: textarea
+    id: screenshots
+    attributes:
+      label: Screenshots
+      description: If applicable, add screenshots to help explain your problem.
+      placeholder: Drag and drop images here or paste image links
+
+  - type: input
+    id: zenject-version
+    attributes:
+      label: Zenject/Extenject Version
+      description: What version of Zenject/Extenject are you using?
+      placeholder: e.g., 9.2.0
+    validations:
+      required: true
+
+  - type: input
+    id: unity-version
+    attributes:
+      label: Unity Version
+      description: What version of Unity are you using?
+      placeholder: e.g., 2021.3.5f1
+    validations:
+      required: true
+
+  - type: dropdown
+    id: scripting-backend
+    attributes:
+      label: Scripting Backend
+      description: What scripting backend is your project using?
+      options:
+        - Mono
+        - IL2CPP
+        - Other
+    validations:
+      required: true
+
+  - type: textarea
+    id: additional-context
+    attributes:
+      label: Additional Context
+      description: Add any other context about the problem here.
+      placeholder: Any additional information that might help us understand the issue
+
+  - type: checkboxes
+    id: terms
+    attributes:
+      label: Code of Conduct
+      description: By submitting this issue, you agree to follow our [Code of Conduct](https://github.com/lask3802/Extenject/blob/master/CONTRIBUTING.md)
+      options:
+        - label: I agree to follow this project's Code of Conduct
+          required: true

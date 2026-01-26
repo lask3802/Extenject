@@ -1,0 +1,121 @@
+# This file defines the labels used for issue tracking and status management
+# Labels can be manually created in GitHub or synced using a labels sync workflow
+
+labels:
+  # Status Labels - Bug Reports
+  - name: "status: needs-triage"
+    color: "d4c5f9"
+    description: "Issue needs initial triage and assessment"
+    
+  - name: "status: under-investigation"
+    color: "c5def5"
+    description: "Issue is being investigated"
+    
+  - name: "status: confirmed"
+    color: "0e8a16"
+    description: "Bug has been confirmed and reproduced"
+    
+  - name: "status: in-progress"
+    color: "fbca04"
+    description: "Work is in progress"
+    
+  - name: "status: fixed"
+    color: "0e8a16"
+    description: "Issue has been fixed"
+    
+  - name: "status: wont-fix"
+    color: "ffffff"
+    description: "This will not be worked on"
+    
+  - name: "status: duplicate"
+    color: "cfd3d7"
+    description: "This issue or pull request already exists"
+
+  # Status Labels - Feature Requests
+  - name: "status: under-consideration"
+    color: "c5def5"
+    description: "Feature request is under consideration"
+    
+  - name: "status: planned"
+    color: "1d76db"
+    description: "Feature is planned for future development"
+    
+  - name: "status: completed"
+    color: "0e8a16"
+    description: "Feature has been implemented"
+    
+  - name: "status: wont-implement"
+    color: "ffffff"
+    description: "This feature will not be implemented"
+
+  # Priority Labels
+  - name: "priority: low"
+    color: "d4c5f9"
+    description: "Low priority - Minor issue with workaround"
+    
+  - name: "priority: medium"
+    color: "fbca04"
+    description: "Medium priority - Moderate impact"
+    
+  - name: "priority: high"
+    color: "d93f0b"
+    description: "High priority - Major functionality affected"
+    
+  - name: "priority: critical"
+    color: "b60205"
+    description: "Critical priority - Blocking or crashes"
+
+  # Type Labels
+  - name: "bug"
+    color: "d73a4a"
+    description: "Something isn't working"
+    
+  - name: "enhancement"
+    color: "a2eeef"
+    description: "New feature or request"
+    
+  - name: "documentation"
+    color: "0075ca"
+    description: "Improvements or additions to documentation"
+    
+  - name: "question"
+    color: "d876e3"
+    description: "Further information is requested"
+    
+  - name: "showcase"
+    color: "5319e7"
+    description: "Showcasing solutions built with Extenject"
+
+  # Component Labels
+  - name: "component: core"
+    color: "c2e0c6"
+    description: "Related to core DI container functionality"
+    
+  - name: "component: bindings"
+    color: "c2e0c6"
+    description: "Related to binding system"
+    
+  - name: "component: signals"
+    color: "c2e0c6"
+    description: "Related to signals system"
+    
+  - name: "component: memory-pools"
+    color: "c2e0c6"
+    description: "Related to memory pool functionality"
+    
+  - name: "component: factories"
+    color: "c2e0c6"
+    description: "Related to factory functionality"
+    
+  - name: "component: subcontainers"
+    color: "c2e0c6"
+    description: "Related to sub-container functionality"
+
+  # Unity Specific
+  - name: "unity: mono"
+    color: "fef2c0"
+    description: "Issue specific to Mono scripting backend"
+    
+  - name: "unity: il2cpp"
+    color: "fef2c0"
+    description: "Issue specific to IL2CPP scripting backend"
