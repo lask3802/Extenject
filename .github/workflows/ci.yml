@@ -95,7 +95,7 @@ jobs:
 
       # Upload Test Artifacts
       - name: Upload Test Results Artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: always()
         with:
           name: Test results for ${{ matrix.testMode }}
@@ -139,7 +139,7 @@ jobs:
       run: dotnet build AssemblyBuild\Zenject-usage.sln
       
     - name: Upload dll
-      uses: actions/upload-artifact@v1
+      uses: actions/upload-artifact@v4
       with:
         name: Zenject-Usage
         path: AssemblyBuild/Zenject-Usage/Zenject-Usage/bin/Debug/netcoreapp3.1/Zenject-Usage.dll
