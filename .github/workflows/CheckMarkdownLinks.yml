@@ -24,6 +24,7 @@ jobs:
           --exclude-mail
           --no-progress
           .
+        output: ./lychee/out.md
     - name: Create Issue From File
       uses: peter-evans/create-issue-from-file@v2
       with:

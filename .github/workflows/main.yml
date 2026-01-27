@@ -15,7 +15,9 @@ env:
 jobs:
   buildAndTestForSupportedPlatforms:
     name: Build for ${{ matrix.targetPlatform }} on version ${{ matrix.unityVersion }}
-    runs-on: self-hosted
+    runs-on: [self-hosted, macOS]
+    env:
+      UNITY_PATH: /Applications/UnityInstalls/${{ matrix.unityVersion }}/Unity.app/Contents/MacOS/Unity
     strategy:
       fail-fast: false
       matrix:
@@ -52,8 +54,6 @@ jobs:
       - name: Run Tests
         id: testRunner
         run: |
-          UNITY_PATH="/Applications/UnityInstalls/${{ matrix.unityVersion }}/Unity.app/Contents/MacOS/Unity"
-          
           echo "Running Unity tests with CLI..."
           $UNITY_PATH \
             -batchmode \
@@ -77,8 +77,6 @@ jobs:
         
       - name: Build
         run: |
-          UNITY_PATH="/Applications/UnityInstalls/${{ matrix.unityVersion }}/Unity.app/Contents/MacOS/Unity"
-          
           echo "Building for platform: ${{ matrix.targetPlatform }}"
           mkdir -p build/${{ matrix.targetPlatform }}
           
@@ -130,7 +128,7 @@ jobs:
         
   buildUnity:
     name: Unity test
-    runs-on: self-hosted
+    runs-on: [self-hosted, macOS]
     needs: Zenject-usage
     env:
       UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
