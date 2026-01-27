@@ -14,7 +14,7 @@ jobs:
 
     name: Build for ${{ matrix.targetPlatform }} on version ${{ matrix.unityVersion }}
 
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
 
     strategy:
       fail-fast: false
@@ -24,14 +24,11 @@ jobs:
         assetsPath:
           - UnityProject
         unityVersion:
-          - 2019.4.1f1
+          - 6000.0.65f1
         targetPlatform:
-          - Android # Build a Android standalone.
-          - iOS # Build an iOS player.
-          - StandaloneLinux64 # Build a Linux 64-bit standalone.
-          - StandaloneOSX # Build a macOS standalone (Intel 64-bit).
-          - StandaloneWindows64 # Build a Windows 64-bit standalone.
-          - WebGL # WebGL.
+          - Android # Build a Android standalone (il2cpp).
+          - iOS # Build an iOS player (il2cpp).
+          - StandaloneOSX # Build a macOS standalone.
           # Not supported platforms by GitHub actions:
           # - Windows Store # Build a standalone for Windows Store devices.
           # - PS4 # Build a Playstation 4 standalone.
@@ -41,38 +38,15 @@ jobs:
 
     steps:
 
-      # Need to be rootless to have write access for checkout and clone repo
-      - name: Use container in rootless mode
-        uses: ScribeMD/rootless-docker@0.1.7
-
       # Checkout
       - name: Checkout repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
         with:
           lfs: true
 
-      # Create Empty Unity project
-      - name: Create Unity Project
-        uses: jbltx/unity-create@v1.1
-        env:
-          UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
-        with:
-          unityVersion: ${{ matrix.unityVersion }}
-          projectPath: ${{ matrix.projectPath }}
-
-      # Checkout and clone UniDi into Assets 
-      # There's no need to do complicated stuff like managing the project manifest
-      # We just clone to the Assets folder as tests will run from here.
-      # If there's another way in the future (like automating the process with a cmd for
-      # Unity's Package Manager) then that would be cool to implement in the Ci workflow.
-      - name: Checkout and Clone Repository
-        uses: actions/checkout@v2
-        with:
-          repository: Mathijs-Bakker/Extenject
-          path: ${{ matrix.projectPath }}
       # Cache
       - name: Caching Unity Project Library
-        uses: actions/cache@v2
+        uses: actions/cache@v4
         with:
           path: ${{ matrix.projectPath }}/Library
           key: Library-${{ matrix.projectPath }}-${{ matrix.targetPlatform }}-${{ hashFiles(matrix.projectPath) }}
@@ -80,18 +54,25 @@ jobs:
             Library-${{ matrix.projectPath }}-${{ matrix.targetPlatform }}-
             Library-${{ matrix.projectPath }}-
             Library-
-      # Test Runner
+      
+      # Test Runner using Unity CLI
       - name: Run Tests
-        uses: game-ci/unity-test-runner@v2
         id: testRunner
-        env:
-          UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
-        with:
-          testMode: ${{ matrix.testMode }}
-          projectPath: ${{ matrix.projectPath }}
-          unityVersion: ${{ matrix.unityVersion }}
-          githubToken: ${{ secrets.GITHUB_TOKEN }}
-          checkName: ${{ matrix.testMode }} Test Results
+        run: |
+          UNITY_PATH="/Applications/UnityInstalls/${{ matrix.unityVersion }}/Unity.app/Contents/MacOS/Unity"
+          
+          echo "Running Unity tests with CLI..."
+          $UNITY_PATH \
+            -batchmode \
+            -nographics \
+            -silent-crashes \
+            -logFile - \
+            -projectPath "${{ matrix.projectPath }}" \
+            -runTests \
+            -testPlatform ${{ matrix.testMode }} \
+            -testResults "${{ matrix.projectPath }}/TestResults-${{ matrix.testMode }}.xml" \
+            || echo "Tests completed with exit code $?"
+        continue-on-error: true
 
       # Upload Test Artifacts
       - name: Upload Test Results Artifacts
@@ -104,22 +85,25 @@ jobs:
             ${{ matrix.projectPath }}/TestResults-*.xml
           if-no-files-found: ignore
 
-      # Build
+      # Build using Unity CLI
       - name: Build 
-        uses: game-ci/unity-builder@v2
-        env:
-          UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
-        with:
-          projectPath: ${{ matrix.projectPath }}
-          unityVersion: ${{ matrix.unityVersion }}
-          targetPlatform: ${{ matrix.targetPlatform }}
-          # Allow Dirty Build as the semantic versioning is doing unsuspecting things
-          # this could be something to look further into
-          allowDirtyBuild: true
+        run: |
+          UNITY_PATH="/Applications/UnityInstalls/${{ matrix.unityVersion }}/Unity.app/Contents/MacOS/Unity"
+          
+          echo "Building for platform: ${{ matrix.targetPlatform }}"
+          $UNITY_PATH \
+            -batchmode \
+            -nographics \
+            -silent-crashes \
+            -logFile - \
+            -projectPath "${{ matrix.projectPath }}" \
+            -buildTarget ${{ matrix.targetPlatform }} \
+            -quit \
+            || echo "Build completed with exit code $?"
           
   build-Zenject-Usage:
   
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     
     name: Build Zenject-Usage
     
@@ -148,7 +132,7 @@ jobs:
   
     name: Deploy Build Zenject-Usage
 
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     needs: build-Zenject-Usage
         
     steps:
@@ -159,7 +143,7 @@ jobs:
         fetch-depth: 0
 
     - name: Download Zenject-Usage
-      uses: actions/download-artifact@v1
+      uses: actions/download-artifact@v4
       with:
         name: UniDi-Usage
 

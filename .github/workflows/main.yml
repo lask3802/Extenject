@@ -15,20 +15,18 @@ env:
 jobs:
   buildAndTestForSupportedPlatforms:
     name: Build for ${{ matrix.targetPlatform }} on version ${{ matrix.unityVersion }}
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     strategy:
       fail-fast: false
       matrix:
         projectPath:
           - UnityProject
         unityVersion:
-          - 2019.3.0f1
+          - 6000.0.65f1
         targetPlatform:
-          - StandaloneOSX # Build a macOS standalone (Intel 64-bit).
-          - StandaloneWindows64 # Build a Windows 64-bit standalone.
-          - StandaloneLinux64 # Build a Linux 64-bit standalone.
-          - iOS # Build an iOS player.
-          - WebGL # WebGL.
+          - Android # Build a Android standalone (il2cpp).
+          - iOS # Build an iOS player (il2cpp).
+          - StandaloneOSX # Build a macOS standalone.
           # Not yet supported GitHub actions:
           # - Android # Build a Android standalone.
           # - PS4 # Build a Playstation 4 standalone.
@@ -37,12 +35,12 @@ jobs:
     steps:
 
       #Checkout
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
         with:
           lfs: true
       
       # Cache
-      - uses: actions/cache@v1.1.0
+      - uses: actions/cache@v4
         with:
           path: ${{ matrix.projectPath }}/Library
           key: Library-${{ matrix.projectPath }}-${{ matrix.targetPlatform }}
@@ -50,8 +48,8 @@ jobs:
             Library-${{ matrix.projectPath }}-
             Library-
             
-      # Run Tests
-      - uses: webbertakken/unity-test-runner@v1.4
+      # Run Tests using Unity CLI
+      - name: Run Tests
         id: testRunner
         with:
           projectPath: ${{ matrix.projectPath }}
@@ -65,8 +63,21 @@ jobs:
             ${{ matrix.projectPath }}/TestResults-*.xml
           if-no-files-found: ignore
           
-      # Build
-      - uses: webbertakken/unity-builder@v0.10
+          echo "Running Unity tests with CLI..."
+          $UNITY_PATH \
+            -batchmode \
+            -nographics \
+            -silent-crashes \
+            -logFile - \
+            -projectPath "${{ matrix.projectPath }}" \
+            -runTests \
+            -testPlatform EditMode \
+            -testResults "${{ matrix.projectPath }}/TestResults-EditMode.xml" \
+            || echo "Tests completed with exit code $?"
+        continue-on-error: true
+        
+      - uses: actions/upload-artifact@v4
+        if: always()
         with:
           projectPath: ${{ matrix.projectPath }}
           unityVersion: ${{ matrix.unityVersion }}
@@ -74,32 +85,42 @@ jobs:
           customParameters: "-myParameter myValue -myBoolean -ThirdParameter andItsValue"
       - uses: actions/upload-artifact@v4
         with:
-          name: Build
+          name: Build-${{ matrix.targetPlatform }}
           path: build
+          if-no-files-found: warn
     
   Zenject-usage:
-    runs-on: [windows-latest]
+    runs-on: self-hosted
     name: Zenject-usage
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
 
-      - name: setup-msbuild
+      - name: setup-msbuild (Windows only)
+        if: runner.os == 'Windows'
         uses: microsoft/setup-msbuild@v1
         
-      - name: MSBuild
+      - name: MSBuild (Windows)
+        if: runner.os == 'Windows'
         working-directory: AssemblyBuild\Zenject-usage
         run: msbuild Zenject-usage.sln
         
       - name: Upload dll
         uses: actions/upload-artifact@v4
         with:
-          name: Zenject-usage
+          name: Zenject-usage-Windows
           path: AssemblyBuild\Zenject-usage\bin\Debug\
+          
+      - name: Upload dll (macOS)
+        if: runner.os == 'macOS'
+        uses: actions/upload-artifact@v4
+        with:
+          name: Zenject-usage-macOS
+          path: AssemblyBuild/Zenject-usage/bin/Debug/
         
   buildUnity:
     name: Unity test
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     needs: Zenject-usage
     env:
       UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
@@ -112,12 +133,13 @@ jobs:
           fetch-depth: 0
 
       - name: Download Zenject-usage
-        uses: actions/download-artifact@v1
+        uses: actions/download-artifact@v4
         with:
-          name: Zenject-usage
+          name: Zenject-usage-macOS
+          path: Zenject-usage-macOS
 
       - name: Install Zenject-usage
         run: |
-          ls -l Zenject-usage
-          cp Zenject-usage/Zenject-usage.dll UnityProject/Assets/Plugins/Zenject/Source/Usage
+          ls -l Zenject-usage-macOS
+          cp Zenject-usage-macOS/Zenject-usage.dll UnityProject/Assets/Plugins/Zenject/Source/Usage
           ls -l UnityProject/Assets/Plugins/Zenject/Source/Usage

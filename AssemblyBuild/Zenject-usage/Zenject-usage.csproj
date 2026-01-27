@@ -25,7 +25,7 @@
     <OutputPath>bin\Debug\</OutputPath>
     <IntermediateOutputPath>..\..\..\..\Temp\obj\Debug\Zenject-usage\</IntermediateOutputPath>
     <BaseIntermediateOutputPath>..\..\..\..\Temp\obj\Debug\Zenject-usage\</BaseIntermediateOutputPath>
-    <GenerateSerializationAssemblies>On</GenerateSerializationAssemblies>
+    <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
     <DefineConstants>TRACE;DEBUG</DefineConstants>
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
@@ -45,7 +45,7 @@
     <DefineConstants>TRACE;DEBUG;NOT_UNITY3D</DefineConstants>
     <DebugType>full</DebugType>
     <PlatformTarget>AnyCPU</PlatformTarget>
-    <GenerateSerializationAssemblies>On</GenerateSerializationAssemblies>
+    <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
     <Prefer32Bit>false</Prefer32Bit>
