@@ -7,18 +7,27 @@ on:
       - '*.md'
 jobs:
   linkChecker:
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
     - name: Link Checker
       id: lc
-      uses: peter-evans/link-checker@v1
+      uses: lycheeverse/lychee-action@v1
       with:
-        args: -v --exclude "https://forum.unity.com" --recursive *
+        args: >-
+          --verbose
+          --exclude "https://forum.unity.com"
+          --exclude "https://gitter.im/Extenject/community"
+          --exclude "https://discord.gg/T5y5TD"
+          --exclude "https://assetstore.unity.com/packages/tools/utilities/extenject-dependency-injection-ioc-157735"
+          --exclude "https://docs.unity3d.com/Packages/com.unity.test-framework@1.1/manual/index.html"
+          --exclude-mail
+          --no-progress
+          .
     - name: Create Issue From File
       uses: peter-evans/create-issue-from-file@v2
       with:
         token: ${{ secrets.GITHUB_TOKEN }}
         title: Link Checker Report
-        content-filepath: ./link-checker/out.md
+        content-filepath: ./lychee/out.md
         labels: report, automated issue

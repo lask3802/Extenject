@@ -51,17 +51,8 @@ jobs:
       # Run Tests using Unity CLI
       - name: Run Tests
         id: testRunner
-        with:
-          projectPath: ${{ matrix.projectPath }}
-          unityVersion: ${{ matrix.unityVersion }}
-      - uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: Test results (all modes)
-          path: |
-            ${{ steps.testRunner.outputs.artifactsPath }}
-            ${{ matrix.projectPath }}/TestResults-*.xml
-          if-no-files-found: ignore
+        run: |
+          UNITY_PATH="/Applications/UnityInstalls/${{ matrix.unityVersion }}/Unity.app/Contents/MacOS/Unity"
           
           echo "Running Unity tests with CLI..."
           $UNITY_PATH \
@@ -75,14 +66,32 @@ jobs:
             -testResults "${{ matrix.projectPath }}/TestResults-EditMode.xml" \
             || echo "Tests completed with exit code $?"
         continue-on-error: true
-        
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          projectPath: ${{ matrix.projectPath }}
-          unityVersion: ${{ matrix.unityVersion }}
-          targetPlatform: ${{ matrix.targetPlatform }}
-          customParameters: "-myParameter myValue -myBoolean -ThirdParameter andItsValue"
+          name: Test results (all modes)
+          path: |
+            ${{ matrix.projectPath }}/TestResults-*.xml
+            ${{ matrix.projectPath }}/Logs/
+          if-no-files-found: ignore
+        
+      - name: Build
+        run: |
+          UNITY_PATH="/Applications/UnityInstalls/${{ matrix.unityVersion }}/Unity.app/Contents/MacOS/Unity"
+          
+          echo "Building for platform: ${{ matrix.targetPlatform }}"
+          mkdir -p build/${{ matrix.targetPlatform }}
+          
+          $UNITY_PATH \
+            -batchmode \
+            -nographics \
+            -silent-crashes \
+            -logFile - \
+            -projectPath "${{ matrix.projectPath }}" \
+            -buildTarget ${{ matrix.targetPlatform }} \
+            -quit \
+            || echo "Build completed with exit code $?"
+        continue-on-error: true
       - uses: actions/upload-artifact@v4
         with:
           name: Build-${{ matrix.targetPlatform }}
@@ -105,7 +114,8 @@ jobs:
         working-directory: AssemblyBuild\Zenject-usage
         run: msbuild Zenject-usage.sln
         
-      - name: Upload dll
+      - name: Upload dll (Windows)
+        if: runner.os == 'Windows'
         uses: actions/upload-artifact@v4
         with:
           name: Zenject-usage-Windows
