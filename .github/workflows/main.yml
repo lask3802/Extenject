@@ -14,7 +14,7 @@ env:
           
 jobs:
   buildAndTestForSupportedPlatforms:
-    name: Build for ${{ matrix.targetPlatform }} on version ${{ matrix.unityVersion }}
+    name: Build for ${{ matrix.buildTarget }} on version ${{ matrix.unityVersion }}
     runs-on: [self-hosted, macOS]
     env:
       UNITY_PATH: /Applications/UnityInstalls/${{ matrix.unityVersion }}/Unity.app/Contents/MacOS/Unity
