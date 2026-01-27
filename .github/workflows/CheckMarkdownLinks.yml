@@ -24,11 +24,11 @@ jobs:
           --exclude-mail
           --no-progress
           .
-        output: ./lychee/out.md
+        output: ./lychee-out.md
     - name: Create Issue From File
       uses: peter-evans/create-issue-from-file@v2
       with:
         token: ${{ secrets.GITHUB_TOKEN }}
         title: Link Checker Report
-        content-filepath: ./lychee/out.md
+        content-filepath: ./lychee-out.md
         labels: report, automated issue
