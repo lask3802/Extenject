@@ -25,10 +25,13 @@ jobs:
           - UnityProject
         unityVersion:
           - 6000.0.65f1
-        targetPlatform:
-          - Android # Build a Android standalone (il2cpp).
-          - iOS # Build an iOS player (il2cpp).
-          - StandaloneOSX # Build a macOS standalone.
+        include:
+          - targetPlatform: Android
+            buildTarget: Android
+          - targetPlatform: iOS
+            buildTarget: iOS
+          - targetPlatform: StandaloneOSX
+            buildTarget: OSXUniversal
           # Not yet supported GitHub actions:
           # - Android # Build a Android standalone.
           # - PS4 # Build a Playstation 4 standalone.
@@ -77,8 +80,8 @@ jobs:
         
       - name: Build
         run: |
-          echo "Building for platform: ${{ matrix.targetPlatform }}"
-          mkdir -p build/${{ matrix.targetPlatform }}
+          echo "Building for platform: ${{ matrix.buildTarget }}"
+          mkdir -p build/${{ matrix.buildTarget }}
           
           $UNITY_PATH \
             -batchmode \
@@ -86,13 +89,13 @@ jobs:
             -silent-crashes \
             -logFile - \
             -projectPath "${{ matrix.projectPath }}" \
-            -buildTarget ${{ matrix.targetPlatform }} \
+            -buildTarget ${{ matrix.buildTarget }} \
             -quit \
             || echo "Build completed with exit code $?"
         continue-on-error: true
       - uses: actions/upload-artifact@v4
         with:
-          name: Build-${{ matrix.targetPlatform }}
+          name: Build-${{ matrix.buildTarget }}
           path: build
           if-no-files-found: warn
     

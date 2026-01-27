@@ -14,6 +14,7 @@ jobs:
       id: lc
       uses: lycheeverse/lychee-action@v1
       with:
+        output: ./lychee-out.md
         args: >-
           --verbose
           --exclude "https://forum.unity.com"
@@ -24,7 +25,6 @@ jobs:
           --exclude-mail
           --no-progress
           .
-        output: ./lychee-out.md
     - name: Create Issue From File
       uses: peter-evans/create-issue-from-file@v2
       with:
