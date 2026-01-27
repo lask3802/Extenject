@@ -25,13 +25,10 @@ jobs:
           - UnityProject
         unityVersion:
           - 6000.0.65f1
-        include:
-          - targetPlatform: Android
-            buildTarget: Android
-          - targetPlatform: iOS
-            buildTarget: iOS
-          - targetPlatform: StandaloneOSX
-            buildTarget: StandaloneOSX
+        buildTarget:
+          - Android
+          - iOS
+          - StandaloneOSX
           # Not yet supported GitHub actions:
           # - Android # Build a Android standalone.
           # - PS4 # Build a Playstation 4 standalone.
@@ -48,7 +45,7 @@ jobs:
       - uses: actions/cache@v4
         with:
           path: ${{ matrix.projectPath }}/Library
-          key: Library-${{ matrix.projectPath }}-${{ matrix.targetPlatform }}
+          key: Library-${{ matrix.projectPath }}-${{ matrix.buildTarget }}
           restore-keys: |
             Library-${{ matrix.projectPath }}-
             Library-
@@ -109,12 +106,8 @@ jobs:
       - name: MSBuild (macOS)
         working-directory: AssemblyBuild/Zenject-usage
         run: |
+          set -e
           msbuild Zenject-usage.sln
-          exit_code=$?
-          if [ $exit_code -ne 0 ]; then
-            echo "MSBuild failed with exit code $exit_code"
-            exit $exit_code
-          fi
 
       - name: Upload dll (macOS)
         uses: actions/upload-artifact@v4

@@ -7,7 +7,7 @@ on:
       - '*.md'
 jobs:
   linkChecker:
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
     - name: Link Checker
