@@ -69,7 +69,7 @@ jobs:
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: Test results (all modes)
+          name: Test results (editmode) - ${{ matrix.buildTarget }}
           path: |
             ${{ matrix.projectPath }}/TestResults-*.xml
             ${{ matrix.projectPath }}/Logs/
