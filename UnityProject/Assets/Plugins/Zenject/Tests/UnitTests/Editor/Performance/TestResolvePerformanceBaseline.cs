@@ -1,5 +1,7 @@
 using System;
+using System.Collections;
 using System.Diagnostics;
+using System.Reflection;
 using NUnit.Framework;
 using Zenject;
 using Assert = ModestTree.Assert;
@@ -13,6 +15,23 @@ namespace Zenject.Tests.Performance
         class UniqueClass
         {
             public int Value = 123;
+        }
+
+        static void ClearTypeAnalyzerCacheFor(Type type)
+        {
+            const BindingFlags flags = BindingFlags.NonPublic | BindingFlags.Static;
+            var typeInfoField = typeof(TypeAnalyzer).GetField("_typeInfo", flags);
+            var allowDuringValidationField = typeof(TypeAnalyzer).GetField("_allowDuringValidation", flags);
+
+            if (typeInfoField?.GetValue(null) is IDictionary typeInfoCache)
+            {
+                typeInfoCache.Remove(type);
+            }
+
+            if (allowDuringValidationField?.GetValue(null) is IDictionary allowDuringValidationCache)
+            {
+                allowDuringValidationCache.Remove(type);
+            }
         }
 
         class SimpleClass
@@ -191,6 +210,7 @@ namespace Zenject.Tests.Performance
         [Test]
         public void TestFirstResolveIncludesMetadataCaching()
         {
+            ClearTypeAnalyzerCacheFor(typeof(UniqueClass));
             Container.Bind<UniqueClass>().AsSingle();
             
             // First resolve includes metadata analysis
