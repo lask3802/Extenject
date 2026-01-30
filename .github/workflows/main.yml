@@ -63,9 +63,7 @@ jobs:
             -projectPath "${{ matrix.projectPath }}" \
             -runTests \
             -testPlatform EditMode \
-            -testResults "${{ matrix.projectPath }}/TestResults-EditMode.xml" \
-            || echo "Tests completed with exit code $?"
-        continue-on-error: true
+            -testResults "${{ matrix.projectPath }}/TestResults-EditMode.xml"
       - uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -87,9 +85,7 @@ jobs:
             -logFile - \
             -projectPath "${{ matrix.projectPath }}" \
             -buildTarget ${{ matrix.buildTarget }} \
-            -quit \
-            || echo "Build completed with exit code $?"
-        continue-on-error: true
+            -quit
       - uses: actions/upload-artifact@v4
         with:
           name: Build-${{ matrix.buildTarget }}

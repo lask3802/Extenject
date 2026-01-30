@@ -10,6 +10,11 @@ namespace Zenject.Tests.Performance
     [Category("Performance")]
     public class TestResolvePerformanceBaseline : ZenjectUnitTestFixture
     {
+        class UniqueClass
+        {
+            public int Value = 123;
+        }
+
         class SimpleClass
         {
             public int Value = 42;
@@ -186,12 +191,6 @@ namespace Zenject.Tests.Performance
         [Test]
         public void TestFirstResolveIncludesMetadataCaching()
         {
-            // Define a new type that hasn't been used yet
-            class UniqueClass
-            {
-                public int Value = 123;
-            }
-            
             Container.Bind<UniqueClass>().AsSingle();
             
             // First resolve includes metadata analysis

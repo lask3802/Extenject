@@ -147,13 +147,13 @@ namespace Zenject.Tests.Injection
         }
 
         [Test]
+        abstract class AbstractClass
+        {
+            public abstract void DoSomething();
+        }
+
         public void TestMetadataNullForAbstractTypes()
         {
-            abstract class AbstractClass
-            {
-                public abstract void DoSomething();
-            }
-
             var info = TypeAnalyzer.TryGetInfo<AbstractClass>();
             // Abstract classes may or may not have metadata depending on implementation
             // Just verify it doesn't throw
