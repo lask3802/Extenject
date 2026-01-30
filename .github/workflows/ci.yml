@@ -79,10 +79,11 @@ jobs:
         uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: Test results for ${{ matrix.targetPlatform }}-${{ matrix.testMode }}
+          name: Test results for ${{ matrix.testMode }}
           path: |
-            ${{ matrix.projectPath }}/TestResults-${{ matrix.testMode }}.xml
-            ${{ matrix.projectPath }}/Logs/
+            ${{ steps.testRunner.outputs.artifactsPath }}
+            ${{ matrix.projectPath }}/TestResults-*.xml
+          if-no-files-found: ignore
 
       # Build using Unity CLI
       - name: Build 

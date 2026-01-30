@@ -146,14 +146,14 @@ namespace Zenject.Tests.Injection
             Assert.IsNull(info, "Interfaces should not have inject metadata");
         }
 
+        abstract class AbstractClass
+        {
+            public abstract void DoSomething();
+        }
+
         [Test]
         public void TestMetadataNullForAbstractTypes()
         {
-            abstract class AbstractClass
-            {
-                public abstract void DoSomething();
-            }
-
             var info = TypeAnalyzer.TryGetInfo<AbstractClass>();
             // Abstract classes may or may not have metadata depending on implementation
             // Just verify it doesn't throw

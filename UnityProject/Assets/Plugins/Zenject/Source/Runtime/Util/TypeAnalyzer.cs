@@ -254,7 +254,7 @@ namespace Zenject
                 reflectionInfo.InjectConstructor, type);
 
             // Avoid LINQ allocations - use for loops instead
-            var injectMethods = new InjectableInfo[reflectionInfo.InjectMethods.Count];
+            var injectMethods = new InjectTypeInfo.InjectMethodInfo[reflectionInfo.InjectMethods.Count];
             for (int i = 0; i < reflectionInfo.InjectMethods.Count; i++)
             {
                 injectMethods[i] = ReflectionInfoTypeInfoConverter.ConvertMethod(reflectionInfo.InjectMethods[i]);
@@ -262,7 +262,7 @@ namespace Zenject
 
             var fieldCount = reflectionInfo.InjectFields.Count;
             var propertyCount = reflectionInfo.InjectProperties.Count;
-            var memberInfos = new InjectableInfo[fieldCount + propertyCount];
+            var memberInfos = new InjectTypeInfo.InjectMemberInfo[fieldCount + propertyCount];
             
             for (int i = 0; i < fieldCount; i++)
             {

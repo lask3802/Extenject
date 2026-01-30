@@ -14,8 +14,10 @@ env:
           
 jobs:
   buildAndTestForSupportedPlatforms:
-    name: Build for ${{ matrix.targetPlatform }} on version ${{ matrix.unityVersion }}
-    runs-on: self-hosted
+    name: Build for ${{ matrix.buildTarget }} on version ${{ matrix.unityVersion }}
+    runs-on: [self-hosted, macOS]
+    env:
+      UNITY_PATH: /Applications/UnityInstalls/${{ matrix.unityVersion }}/Unity.app/Contents/MacOS/Unity
     strategy:
       fail-fast: false
       matrix:
@@ -23,10 +25,10 @@ jobs:
           - UnityProject
         unityVersion:
           - 6000.0.65f1
-        targetPlatform:
-          - Android # Build a Android standalone (il2cpp).
-          - iOS # Build an iOS player (il2cpp).
-          - StandaloneOSX # Build a macOS standalone.
+        buildTarget:
+          - Android
+          - iOS
+          - StandaloneOSX
           # Not yet supported GitHub actions:
           # - Android # Build a Android standalone.
           # - PS4 # Build a Playstation 4 standalone.
@@ -43,7 +45,7 @@ jobs:
       - uses: actions/cache@v4
         with:
           path: ${{ matrix.projectPath }}/Library
-          key: Library-${{ matrix.projectPath }}-${{ matrix.targetPlatform }}
+          key: Library-${{ matrix.projectPath }}-${{ matrix.buildTarget }}
           restore-keys: |
             Library-${{ matrix.projectPath }}-
             Library-
@@ -52,8 +54,6 @@ jobs:
       - name: Run Tests
         id: testRunner
         run: |
-          UNITY_PATH="/Applications/UnityInstalls/${{ matrix.unityVersion }}/Unity.app/Contents/MacOS/Unity"
-          
           echo "Running Unity tests with CLI..."
           $UNITY_PATH \
             -batchmode \
@@ -63,25 +63,20 @@ jobs:
             -projectPath "${{ matrix.projectPath }}" \
             -runTests \
             -testPlatform EditMode \
-            -testResults "${{ matrix.projectPath }}/TestResults-EditMode.xml" \
-            || echo "Tests completed with exit code $?"
-        continue-on-error: true
-        
+            -testResults "${{ matrix.projectPath }}/TestResults-EditMode.xml"
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: Test results for ${{ matrix.targetPlatform }}-EditMode
+          name: Test results (editmode) - ${{ matrix.buildTarget }}
           path: |
-            ${{ matrix.projectPath }}/TestResults-EditMode.xml
+            ${{ matrix.projectPath }}/TestResults-*.xml
             ${{ matrix.projectPath }}/Logs/
-          
-      # Build using Unity CLI
+          if-no-files-found: ignore
+        
       - name: Build
         run: |
-          UNITY_PATH="/Applications/UnityInstalls/${{ matrix.unityVersion }}/Unity.app/Contents/MacOS/Unity"
-          
-          echo "Building for platform: ${{ matrix.targetPlatform }}"
-          mkdir -p build/${{ matrix.targetPlatform }}
+          echo "Building for platform: ${{ matrix.buildTarget }}"
+          mkdir -p build/${{ matrix.buildTarget }}
           
           $UNITY_PATH \
             -batchmode \
@@ -89,48 +84,28 @@ jobs:
             -silent-crashes \
             -logFile - \
             -projectPath "${{ matrix.projectPath }}" \
-            -buildTarget ${{ matrix.targetPlatform }} \
-            -quit \
-            || echo "Build completed with exit code $?"
-        continue-on-error: true
-        
+            -buildTarget ${{ matrix.buildTarget }} \
+            -quit
       - uses: actions/upload-artifact@v4
-        if: always()
         with:
-          name: Build-${{ matrix.targetPlatform }}
+          name: Build-${{ matrix.buildTarget }}
           path: build
           if-no-files-found: warn
     
   Zenject-usage:
-    runs-on: self-hosted
+    runs-on: [self-hosted, macOS]
     name: Zenject-usage
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
-
-      - name: setup-msbuild (Windows only)
-        if: runner.os == 'Windows'
-        uses: microsoft/setup-msbuild@v1
-        
-      - name: MSBuild (Windows)
-        if: runner.os == 'Windows'
-        working-directory: AssemblyBuild\Zenject-usage
-        run: msbuild Zenject-usage.sln
-        
+      
       - name: MSBuild (macOS)
-        if: runner.os == 'macOS'
         working-directory: AssemblyBuild/Zenject-usage
-        run: msbuild Zenject-usage.sln
-        
-      - name: Upload dll (Windows)
-        if: runner.os == 'Windows'
-        uses: actions/upload-artifact@v4
-        with:
-          name: Zenject-usage-Windows
-          path: AssemblyBuild\Zenject-usage\bin\Debug\
-          
+        run: |
+          set -e
+          msbuild Zenject-usage.sln
+
       - name: Upload dll (macOS)
-        if: runner.os == 'macOS'
         uses: actions/upload-artifact@v4
         with:
           name: Zenject-usage-macOS
@@ -138,7 +113,7 @@ jobs:
         
   buildUnity:
     name: Unity test
-    runs-on: self-hosted
+    runs-on: [self-hosted, macOS]
     needs: Zenject-usage
     env:
       UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
